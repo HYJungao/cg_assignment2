@@ -49,11 +49,8 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
 
 
 	// This is the dummy implementation you should remove.
-    ctx.m_vecResult[ v ] = n*0.5+0.5;
-    Sleep(1);
-    return;
 
-    /*
+    Random rnd;
     // direct lighting pass? => integrate direct illumination by shooting shadow rays to light source
     if ( ctx.m_currentBounce == 0 )
     {
@@ -63,13 +60,19 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
             // draw sample on light source
             float pdf;
             Vec3f Pl;
+            ctx.m_light->sample(pdf, Pl, 0, rnd);
 
             // construct vector from current vertex (o) to light sample
+            Vec3f v2l = Pl - o;
 
             // trace shadow ray to see if it's blocked
+            if (!ctx.m_rt->raycast(o, v2l))
             {
                 // if not, add the appropriate emission, 1/r^2 and clamped cosine terms, accounting for the PDF as well.
                 // accumulate into E
+                float cosTheta = FW::clamp(FW::dot(-v2l.normalized(), ctx.m_light->getNormal()), 0.0f, 1.0f);
+                float cosThetaY = FW::clamp(FW::dot(v2l.normalized(), n), 0.0f, 1.0f);
+                E += ctx.m_light->getEmission() * cosTheta * cosThetaY / (v2l.lenSqr() * pdf);
             }
         }
         // Note we are NOT multiplying by PI here;
@@ -78,6 +81,7 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
         ctx.m_vecCurr[ v ] = E * (1.0f/ctx.m_numDirectRays);
         ctx.m_vecResult[ v ] = ctx.m_vecCurr[ v ];
     }
+    /*
     else
     {
         // OK, time for indirect!
