@@ -102,7 +102,7 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
             float x = radial * FW::cos(theta);
             float y = radial * FW::sin(theta);
 
-            Vec3f d(x, y, FW::sqrt(1 - u));
+            Vec3f d(x, y, FW::sqrt(1 - a));
 
             // Make the direction long but not too long to avoid numerical instability in the ray tracer.
             // For our scenes, 100 is a good length. (I know, this special casing sucks.)
