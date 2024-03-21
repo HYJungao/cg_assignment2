@@ -25,7 +25,13 @@ Vec2f getTexelCoords(Vec2f uv, const Vec2i size)
 {
 
 	// Convert texture coordinate to pixel index as you did in assignment 1.
-	return Vec2f();
+    float u = uv.x - floor(uv.x);
+    float v = uv.y - floor(uv.y);
+
+    float x = u * size.x;
+    float y = v * size.y;
+
+    return Vec2f(x, y);
 }
 
 Mat3f formBasis(const Vec3f& n) {
