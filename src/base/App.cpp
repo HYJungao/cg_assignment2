@@ -50,6 +50,12 @@ App::App(std::vector<std::string>& cmd_args)
 	m_commonCtrl.addStateObject(this);
 	m_cameraCtrl.setKeepAligned(true);
 
+	m_commonCtrl.beginSliderStack();
+	m_commonCtrl.addSlider(&m_Bounces, 0, 8, false, FW_KEY_NONE, FW_KEY_NONE, "Round of indirect bounces= %d");
+	m_commonCtrl.endSliderStack();
+	m_commonCtrl.addButton((S32*)&m_action, Action_ViewBounce, FW_KEY_NONE, "Visualizing bounces separately");
+	m_commonCtrl.addSeparator();
+
 	m_commonCtrl.addButton((S32*)&m_action, Action_LoadMesh, FW_KEY_M, "Load mesh or state... (M)");
 	m_commonCtrl.addButton((S32*)&m_action, Action_ReloadMesh, FW_KEY_F5, "Reload mesh (F5)");
 	m_commonCtrl.addButton((S32*)&m_action, Action_SaveMesh, FW_KEY_O, "Save mesh... (O)");
@@ -272,6 +278,10 @@ bool App::handleEvent(const Window::Event& ev)
 	case Action_None:
 		break;
 
+	case Action_ViewBounce:
+		m_radiosity->showIntermediateResult(m_Bounces);
+		m_radiosity->updateMeshColors(m_sphericalResults1, m_sphericalResults2, m_sphericalResults3, m_enableSH);
+		break;
 
 	case Action_LoadMesh:
 		name = m_window.showFileLoadDialog("Load mesh or state", getMeshImportFilter()+",dat:State file");

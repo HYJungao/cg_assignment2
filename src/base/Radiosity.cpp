@@ -166,13 +166,17 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
         ctx.m_vecResult[ v ] = ctx.m_vecResult[ v ] + ctx.m_vecCurr[ v ];
 
         // uncomment this to visualize only the current bounce
-        //ctx.m_vecResult[ v ] = ctx.m_vecCurr[ v ];	
+        // ctx.m_vecResult[ v ] = ctx.m_vecCurr[ v ];	
     }
 }
 // --------------------------------------------------------------------------
 
 void Radiosity::startRadiosityProcess( MeshWithColors* scene, AreaLight* light, RayTracer* rt, int numBounces, int numDirectRays, int numHemisphereRays )
 {
+    m_showIntermediateResult = false;
+    m_isFinished = false;
+    m_context.m_intermediateResult.clear();
+
     // put stuff the asyncronous processor needs 
     m_context.m_scene				= scene;
     m_context.m_rt					= rt;
@@ -241,19 +245,42 @@ void Radiosity::checkFinish()
         // yes, remove from task list
         m_launcher.popAll();
 
+        m_context.m_intermediateResult.push_back(m_context.m_vecCurr);
         // more bounces desired?
         if ( m_context.m_currentBounce < m_context.m_numBounces )
         {
             // move current bounce to prev
             m_context.m_vecPrevBounce = m_context.m_vecCurr;
+
             ++m_context.m_currentBounce;
             // start new tasks for all vertices
             m_launcher.push( vertexTaskFunc, &m_context, 0, m_context.m_scene->numVertices() );
             printf( "\nStarting bounce %d\n", m_context.m_currentBounce );
         }
-        else printf( "\n DONE!\n" );
+        else {
+            m_context.m_BackupResult = m_context.m_vecResult;
+            m_isFinished = true;
+            printf("\n DONE!\n");
+        }
     }
 }
 // --------------------------------------------------------------------------
+
+void Radiosity::showIntermediateResult(int round)
+{
+    if (m_isFinished && round < m_context.m_intermediateResult.size()) {
+        if (m_showIntermediateResult == false) {
+            m_showIntermediateResult = true;
+            m_context.m_vecResult = m_context.m_intermediateResult.at(round);
+        }
+        else {
+            m_showIntermediateResult = false;
+            m_context.m_vecResult = m_context.m_BackupResult;
+        }
+    }
+    else {
+        printf("\n Computing NOT DONE!\n");
+    }
+}
 
 } // namespace FW

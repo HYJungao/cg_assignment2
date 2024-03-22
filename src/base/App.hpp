@@ -28,6 +28,8 @@ private:
     {
         Action_None,
 
+        Action_ViewBounce,
+
         Action_LoadMesh,
         Action_ReloadMesh,
         Action_SaveMesh,
@@ -167,6 +169,8 @@ private:
     Timer								m_updateClock;
 	GLuint								m_tangentBuffer, m_bitangentBuffer, m_sphericalBuffer1, m_sphericalBuffer2;
 	bool								m_enableSH, m_shChanged;
+
+    int									m_Bounces;
 };
 
 
