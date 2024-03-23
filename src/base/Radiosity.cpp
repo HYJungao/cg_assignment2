@@ -9,6 +9,8 @@ namespace FW {
 
 // --------------------------------------------------------------------------
 
+bool Radiosity::m_QMC = false;
+
 Radiosity::~Radiosity()
 {
     if ( isRunning() )
@@ -60,7 +62,12 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
             // draw sample on light source
             float pdf;
             Vec3f Pl;
-            ctx.m_light->sample(pdf, Pl, 0, rnd);
+            if (m_QMC) {
+                ctx.m_light->sampleHalton(pdf, Pl, 2, 3, r);
+            }
+            else {
+                ctx.m_light->sample(pdf, Pl, 0, rnd);
+            }
 
             // construct vector from current vertex (o) to light sample
             Vec3f v2l = Pl - o;
@@ -94,8 +101,19 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
         {
             // Draw a cosine weighted direction and find out where it hits (if anywhere)
             // You need to transform it from the local frame to the vertex' hemisphere using B.
-            float a = rnd.getF32(0, 1);
-            float b = rnd.getF32(0, 1);
+            float a;
+            float b;
+
+            if (m_QMC) {
+                a = halton(r, 5);
+                b = halton(r, 7);
+            }
+            else
+            {
+                a = rnd.getF32(0, 1);
+                b = rnd.getF32(0, 1);
+            }
+
             float radial = FW::sqrt(a);
             float theta = 2.0 * FW_PI * b;
 
@@ -281,6 +299,18 @@ void Radiosity::showIntermediateResult(int round)
     else {
         printf("\n Computing NOT DONE!\n");
     }
+}
+
+float Radiosity::halton(int index, int base) {
+    float result = 0;
+    float f = 1.0 / base;
+    int i = index;
+    while (i > 0) {
+        result = result + f * (i % base);
+        i = i / base;
+        f = f / base;
+    }
+    return result;
 }
 
 } // namespace FW

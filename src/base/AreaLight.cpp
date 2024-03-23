@@ -47,5 +47,26 @@ void AreaLight::sample(float& pdf, Vec3f& p, int base, Random& rnd) {
     pdf = 1.0f / (4 * m_size.x * m_size.y);
 }
 
+float AreaLight::halton(int index, int base) {
+    float result = 0;
+    float f = 1.0 / base;
+    int i = index;
+    while (i > 0) {
+        result = result + f * (i % base);
+        i = i / base;
+        f = f / base;
+    }
+    return result;
+}
+
+void AreaLight::sampleHalton(float& pdf, Vec3f& p, int base1, int base2, int index)
+{
+    float a = halton(index, base1) * 2 - 1;
+    float b = halton(index, base2) * 2 - 1;
+
+    p = m_xform * Vec3f(a * m_size.x, b * m_size.y, 0);
+
+    pdf = 1.0f / (4 * m_size.x * m_size.y);
+}
 
 } // namespace FW

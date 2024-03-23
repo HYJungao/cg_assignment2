@@ -21,6 +21,8 @@ public:
     // this function draws samples on the light source for computing direct illumination
     // the "base" input can be used for driving QMC samplers; unless you do something to it yourself, has no effect.
     void			sample( float& pdf, Vec3f& p, int base, Random& rnd );
+    float           halton(int index, int base);
+    void            sampleHalton(float& pdf, Vec3f& p, int base1, int base2, int index);
 
     Vec3f			getPosition(void) const			{ return Vec4f(m_xform.getCol(3)).getXYZ(); }
     void			setPosition(const Vec3f& p)		{ m_xform.setCol(3, Vec4f(p, 1.0f)); }

@@ -171,6 +171,7 @@ private:
 	bool								m_enableSH, m_shChanged;
 
     int									m_Bounces;
+    bool								m_useQMC;
 };
 
 

@@ -50,10 +50,12 @@ App::App(std::vector<std::string>& cmd_args)
 	m_commonCtrl.addStateObject(this);
 	m_cameraCtrl.setKeepAligned(true);
 
+	m_useQMC = false;
 	m_commonCtrl.beginSliderStack();
 	m_commonCtrl.addSlider(&m_Bounces, 0, 8, false, FW_KEY_NONE, FW_KEY_NONE, "Round of indirect bounces= %d");
 	m_commonCtrl.endSliderStack();
 	m_commonCtrl.addButton((S32*)&m_action, Action_ViewBounce, FW_KEY_NONE, "Visualizing bounces separately");
+	m_commonCtrl.addToggle(&m_useQMC, FW_KEY_NONE, "Use  QMC");
 	m_commonCtrl.addSeparator();
 
 	m_commonCtrl.addButton((S32*)&m_action, Action_LoadMesh, FW_KEY_M, "Load mesh or state... (M)");
@@ -447,6 +449,7 @@ bool App::handleEvent(const Window::Event& ev)
 		break;
 
 	case Action_ComputeRadiosity:
+		m_radiosity->setQMC(m_useQMC);
 		m_radiosity->startRadiosityProcess( m_mesh.get(), m_areaLight.get(), m_rt.get(), m_numBounces, m_numDirectRays, m_numHemisphereRays );
 		m_updateClock.start();
 		break;
