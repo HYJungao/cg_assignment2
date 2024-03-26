@@ -69,4 +69,19 @@ void AreaLight::sampleHalton(float& pdf, Vec3f& p, int base1, int base2, int ind
     pdf = 1.0f / (4 * m_size.x * m_size.y);
 }
 
+void AreaLight::StratifiedSample(float& pdf, Vec3f& p, Random& rnd, float dx, float dy, float i, float j)
+{
+    float aa = -1 + i * dx;
+    float ab = -1 + (i + 1) * dx;
+
+    float ba = -1 + j * dy;
+    float bb = -1 + (j + 1) * dy;
+    float x = rnd.getF32(aa, ab);
+    float y = rnd.getF32(ba, bb);
+
+    p = m_xform * Vec3f(x * m_size.x, y * m_size.y, 0);
+
+    pdf = 1.0f / (4 * m_size.x * m_size.y);
+}
+
 } // namespace FW

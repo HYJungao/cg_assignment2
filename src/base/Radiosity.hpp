@@ -30,6 +30,7 @@ public:
     void showIntermediateResult(int round);
     static float halton(int index, int base);
     void setQMC(bool value) { m_QMC = value; }
+    void setStratified(bool value) { m_Stratified = value; }
 
     // we'll compute radiosity asynchronously, meaning we'll be able to
     // fly around in the scene watching the process complete.
@@ -82,6 +83,7 @@ protected:
 
 public:
     static bool				m_QMC;
+    static bool				m_Stratified;
 };
 
 } // namepace FW

@@ -10,6 +10,7 @@ namespace FW {
 // --------------------------------------------------------------------------
 
 bool Radiosity::m_QMC = false;
+bool Radiosity::m_Stratified = false;
 
 Radiosity::~Radiosity()
 {
@@ -57,6 +58,14 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
     if ( ctx.m_currentBounce == 0 )
     {
         Vec3f E(0);
+
+        int row = FW::sqrt((float)ctx.m_numDirectRays);
+        int col = ctx.m_numDirectRays / row;
+        float dx = 2.0f / row;
+        float dy = 2.0f / col;
+        int i = 0;
+        int j = 0;
+
         for ( int r = 0; r < ctx.m_numDirectRays; ++r )
         {
             // draw sample on light source
@@ -64,6 +73,14 @@ void Radiosity::vertexTaskFunc( MulticoreLauncher::Task& task )
             Vec3f Pl;
             if (m_QMC) {
                 ctx.m_light->sampleHalton(pdf, Pl, 2, 3, r);
+            }
+            else if (m_Stratified) {
+                if (r != 0 && r % row == 0) {
+                    i = 0;
+                    j++;
+                }
+                ctx.m_light->StratifiedSample(pdf, Pl, rnd, dx, dy, i, j);
+                i++;
             }
             else {
                 ctx.m_light->sample(pdf, Pl, 0, rnd);

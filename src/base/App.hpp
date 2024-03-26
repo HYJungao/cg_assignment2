@@ -172,6 +172,7 @@ private:
 
     int									m_Bounces;
     bool								m_useQMC;
+    bool								m_useStratified;
 };
 
 

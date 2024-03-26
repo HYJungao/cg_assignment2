@@ -23,6 +23,7 @@ public:
     void			sample( float& pdf, Vec3f& p, int base, Random& rnd );
     float           halton(int index, int base);
     void            sampleHalton(float& pdf, Vec3f& p, int base1, int base2, int index);
+    void            StratifiedSample(float& pdf, Vec3f& p, Random& rnd, float dx, float dy, float i, float j);
 
     Vec3f			getPosition(void) const			{ return Vec4f(m_xform.getCol(3)).getXYZ(); }
     void			setPosition(const Vec3f& p)		{ m_xform.setCol(3, Vec4f(p, 1.0f)); }
