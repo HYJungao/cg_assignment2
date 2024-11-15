@@ -52,6 +52,7 @@ App::App(std::vector<std::string>& cmd_args)
 
 	m_useQMC = false;
 	m_useStratified = false;
+	m_Bounces = 0;
 	m_commonCtrl.beginSliderStack();
 	m_commonCtrl.addSlider(&m_Bounces, 0, 8, false, FW_KEY_NONE, FW_KEY_NONE, "Round of indirect bounces= %d");
 	m_commonCtrl.endSliderStack();
